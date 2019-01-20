@@ -54,7 +54,7 @@ func parseLinkText(node *html.Node) (text string) {
 		if child.Type == html.TextNode {
 			text += child.Data
 		} else if child.Type == html.ElementNode && child.FirstChild != nil {
-			text += child.FirstChild.Data
+			text += parseLinkText(child)
 		}
 		child = child.NextSibling
 	}

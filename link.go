@@ -25,6 +25,7 @@ func Parse(r io.Reader) ([]Link, error) {
 	return links, nil
 }
 
+// Parses all nodes in the tree recursively
 func parseNode(node *html.Node, links *[]Link) {
 	if node.Type == html.ElementNode && node.Data == "a" {
 		var href string
@@ -34,18 +35,8 @@ func parseNode(node *html.Node, links *[]Link) {
 				break
 			}
 		}
-		var text string
-		child := node.FirstChild
-		for child != nil {
-			if child.Type == html.TextNode {
-				text += child.Data
-			} else if child.Type == html.ElementNode && child.FirstChild != nil {
-				text += child.FirstChild.Data
-			}
-			child = child.NextSibling
-		}
 
-		*links = append(*links, Link{href, text})
+		*links = append(*links, Link{href, parseLinkText(node)})
 	}
 
 	if node.FirstChild != nil {
@@ -54,4 +45,19 @@ func parseNode(node *html.Node, links *[]Link) {
 	if node.NextSibling != nil {
 		parseNode(node.NextSibling, links)
 	}
+}
+
+// Parses the link node's text from all child nodes and returns a string representing the text
+func parseLinkText(node *html.Node) (text string) {
+	child := node.FirstChild
+	for child != nil {
+		if child.Type == html.TextNode {
+			text += child.Data
+		} else if child.Type == html.ElementNode && child.FirstChild != nil {
+			text += child.FirstChild.Data
+		}
+		child = child.NextSibling
+	}
+
+	return
 }

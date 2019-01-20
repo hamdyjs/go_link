@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,7 +10,10 @@ import (
 )
 
 func main() {
-	path, _ := filepath.Abs("examples/ex1.html")
+	htmlFile := flag.String("file", "examples/ex1.html", "The html file to parse")
+	flag.Parse()
+
+	path, _ := filepath.Abs(*htmlFile)
 	fmt.Println("Using path:", path)
 	f, err := os.Open(path)
 	if err != nil {

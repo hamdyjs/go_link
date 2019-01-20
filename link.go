@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Link type
+// Link is a type that describes parsed links
 type Link struct {
 	Href string
 	Text string

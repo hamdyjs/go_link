@@ -20,29 +20,38 @@ func Parse(r io.Reader) ([]Link, error) {
 	}
 
 	links := make([]Link, 0)
-	var f func(node *html.Node)
-	f = func(node *html.Node) {
-		if node.Type == html.ElementNode && node.Data == "a" {
-			var href string
-			for _, attr := range node.Attr {
-				if attr.Key == "href" {
-					href = attr.Val
-					break
-				}
-			}
-			text := node.FirstChild.Data
-
-			links = append(links, Link{href, text})
-		}
-
-		if node.FirstChild != nil {
-			f(node.FirstChild)
-		}
-		if node.NextSibling != nil {
-			f(node.NextSibling)
-		}
-	}
-	f(doc)
+	parseNode(doc, &links)
 
 	return links, nil
+}
+
+func parseNode(node *html.Node, links *[]Link) {
+	if node.Type == html.ElementNode && node.Data == "a" {
+		var href string
+		for _, attr := range node.Attr {
+			if attr.Key == "href" {
+				href = attr.Val
+				break
+			}
+		}
+		var text string
+		child := node.FirstChild
+		for child != nil {
+			if child.Type == html.TextNode {
+				text += child.Data
+			} else if child.Type == html.ElementNode && child.FirstChild != nil {
+				text += child.FirstChild.Data
+			}
+			child = child.NextSibling
+		}
+
+		*links = append(*links, Link{href, text})
+	}
+
+	if node.FirstChild != nil {
+		parseNode(node.FirstChild, links)
+	}
+	if node.NextSibling != nil {
+		parseNode(node.NextSibling, links)
+	}
 }

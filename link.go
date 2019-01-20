@@ -2,6 +2,7 @@ package link
 
 import (
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -51,7 +52,7 @@ func parseNode(node *html.Node, links *[]Link) {
 func parseLinkText(node *html.Node) (text string) {
 	child := node.FirstChild
 	for child != nil {
-		if child.Type == html.TextNode {
+		if child.Type == html.TextNode && child.Data != "" {
 			text += child.Data
 		} else if child.Type == html.ElementNode && child.FirstChild != nil {
 			text += parseLinkText(child)
@@ -59,5 +60,5 @@ func parseLinkText(node *html.Node) (text string) {
 		child = child.NextSibling
 	}
 
-	return
+	return strings.TrimSpace(text)
 }

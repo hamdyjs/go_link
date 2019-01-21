@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	link "github.com/hamdyjs/go_link"
+	"github.com/hamdyjs/link"
 )
 
 func main() {
